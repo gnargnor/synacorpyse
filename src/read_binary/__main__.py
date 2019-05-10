@@ -1,13 +1,19 @@
 import click
 
-import reader
+from models.source import SourceFile
+from models.token import Tokens
 
 
 @click.command()
-@click.option('-f', '--file', required=True)
-def main(file):
-    out_string = reader.read_binary(file)
-    print(out_string)
+@click.option('-s', '--source-file', required=True)
+def main(source_file):
+    source_file = SourceFile(source_file)
+    input_values = source_file.interpret_binary()
+    tokenizer = Tokens(input_values)
+    tokens = [token for token in tokenizer]
+    print(tokens)
+    # out_string = reader.read_binary(file)
+    # print(out_string)
 
 
 if __name__ == '__main__':
