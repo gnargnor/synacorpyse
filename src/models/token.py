@@ -30,22 +30,6 @@ class Argument(Token):
         self.arg_num = arg_num
 
 
-# class Number(Argument):
-#     def __init__(self, value, address):
-#         super().__init__('NUMBER', value, address)
-#
-#
-# class Register(Argument):
-#     """Numbers 32768..32775 instead mean registers 0..7"""
-#     def __init__(self, value, address):
-#         value = value - 32768
-#         super().__init__('REGISTER', value, address)
-#
-#
-# class Character(Argument):
-#     pass
-
-
 def Tokens(input_values):
     end = len(input_values) + 1
     address = 0
@@ -53,7 +37,6 @@ def Tokens(input_values):
 
     while address < end:
         print(f'address: {address}')
-        # print(f'command: {command}')
         print(f'arguments: {arguments}')
 
         if not len(arguments):

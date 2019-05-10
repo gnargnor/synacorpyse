@@ -10,7 +10,8 @@ Architecture specs and instructions in `challenge/arch-spec`
 
 ## What exactly is it that you do here?
 **In Progress** (Not much yet.)
-* Run the VM: `read-binary -f challenge.bin`
+* Run the VM: `read-binary -s challenge/challenge.bin`
+* The VM will read the binary and tokenize the first 800 or so values interpretted from the binary.
 
 ## Author
 * Logan Kelly
