@@ -1,31 +1,62 @@
+from abc import abstractmethod, ABCMeta
 import sys
 
 
-def halt_op():
-    """
-    0: Stop execution and terminate the program.
-    :return:
-    """
-    sys.exit()
+from models.register import Register
+from models.stack import Stack
 
 
-def set_op(a, b):
-    """
-    1: Set register <a> to the value of <b>.
-    :param a: target register
-    :param b: value
-    :return:
-    """
-    print(f'a: {a} (target register)\nb: {b} (value)')
+class Operation(metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def num_args(self):
+        pass
+
+    @abstractmethod
+    def operate(self):
+        pass
 
 
-def push_op(a):
-    """
-    2: Push <a> onto the stack.
-    :param a: ?
-    :return:
-    """
-    pass
+class Halt(Operation):
+    """0: Stop execution and terminate the program. """
+    num_args = 0
+
+    def operate(self):
+        sys.exit()
+
+
+class Set(Operation):
+    """1: Set register <a> to the value of <b>."""
+    num_args = 2
+
+    def __init__(self, a, b):
+        self.register: Register = a
+        self.value: int = b
+
+    def operate(self):
+        self.register.set_value(self.value)
+
+
+class Push(Operation):
+    """2: Push <a> onto the stack."""
+    num_args = 1
+
+    def __init__(self, a):
+        self.value = a
+
+    def operate(self):
+        pass
+
+
+class Pop(Operation):
+    """3: Remove the top element from the stack and write it into <a>; empty stack = error."""
+    num_args = 1
+
+    def __init__(self, a):
+        self.destination = a
+
+    def operate(self):
+        pass
 
 
 def pop_op(a):
