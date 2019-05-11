@@ -12,8 +12,6 @@ def main(source_file):
     tokenizer = Tokens(input_values)
     tokens = [token for token in tokenizer]
     print(tokens)
-    # out_string = reader.read_binary(file)
-    # print(out_string)
 
 
 if __name__ == '__main__':
