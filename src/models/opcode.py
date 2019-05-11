@@ -2,6 +2,7 @@ from abc import abstractmethod, ABCMeta
 import sys
 
 
+from models.memory import Memory
 from models.register import Register
 from models.stack import Stack
 
@@ -16,13 +17,22 @@ class Operation(metaclass=ABCMeta):
     def operate(self):
         pass
 
+    def get_storage(self, location):
+        """When an operation is given a storage reference, we need a way to fetch that object and update it."""
+        pass
+
 
 class Halt(Operation):
     """0: Stop execution and terminate the program. """
+    op_id = 0
     num_args = 0
 
     def operate(self):
         sys.exit()
+
+    def repr(self):
+        return f'{self.__class__.__name__}(' \
+            f'{self.op_id}: num_args: {self.num_args}'
 
 
 class Set(Operation):
@@ -59,24 +69,28 @@ class Pop(Operation):
         pass
 
 
-def pop_op(a):
-    """
-    3: Remove the top element from the stack and write it into <a>; empty stack = error.
-    :param a:
-    :return:
-    """
-    pass
+class Equal(Operation):
+    """4: Set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise."""
+    num_args = 3
+
+    def __init__(self, a, b, c):
+        self.set_bit = self.get_storage(a)
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        self.a = 1 if self.left == self.right else 0
 
 
-def eq_op(a, b, c):
-    """
-    4: Set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise.
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+# def eq_op(a, b, c):
+#     """
+#     4: Set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise.
+#     :param a:
+#     :param b:
+#     :param c:
+#     :return:
+#     """
+#     pass
 
 
 def gt_op(a, b, c):
@@ -250,9 +264,9 @@ def noop_op():
 
 
 opcode_map = {
-    0: halt_op,
-    1: set_op,
-    2: push_op,
+    0: Halt,
+    1: Set,
+    2: Push,
     3: pop_op,
     4: eq_op,
     5: gt_op,
