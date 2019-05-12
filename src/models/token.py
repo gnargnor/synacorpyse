@@ -8,9 +8,6 @@ class InvalidCommandValueError(Exception):
 
 class Token:
     def __init__(self, type: str, value: int, address: int):
-        print(f'type: {type}')
-        print(f'value: {value}')
-        print(f'------------------')
         self.type = type
         self.value = value
         self.address = address
@@ -23,11 +20,15 @@ class Command(Token):
         super().__init__('COMMAND', value, address)
         self.operation = self.get_operation()
 
+    def __repr__(self):
+        return f'{self.__class__.__name__} (' \
+            f'value={self.value}, address={self.address}, operation={self.operation})'
+
     def get_operation(self):
         return opcode.opcode_map[self.value]
 
     def get_num_args(self) -> int:
-        return self.operation.__code__.co_argcount
+        return self.operation.num_args
 
     @staticmethod
     def is_valid():
@@ -38,6 +39,10 @@ class Argument(Token):
     def __init__(self, value: int, address: int, arg_num):
         super().__init__('ARGUMENT', value, address)
         self.arg_num = arg_num
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} (' \
+            f'value={self.value}, address={self.address}, arg_num={self.arg_num}'
 
     @staticmethod
     def is_valid():
@@ -59,16 +64,12 @@ def Tokens(input_values):
     arguments = []
 
     while address < limit:
-        print(f'address: {address}')
-        print(f'arguments: {arguments}')
-
         if not len(arguments):
             try:
                 token = Command(input_values[address], address)
                 num_args = token.get_num_args()
                 arguments = list(reversed(range(num_args)))
             except InvalidCommandValueError as ex:
-                print(ex)
                 token = Unknown(input_values[address], address)
             yield token
         else:
