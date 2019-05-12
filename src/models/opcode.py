@@ -44,7 +44,7 @@ class Set(Operation):
         self.value: int = b
 
     def operate(self):
-        self.register.set_value(self.value)
+        self.register.value(self.value)
 
 
 class Push(Operation):
@@ -74,218 +74,249 @@ class Equal(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.set_bit = self.get_storage(a)
+        self.storage_location = a
         self.left = b
         self.right = c
 
     def operate(self):
-        self.a = 1 if self.left == self.right else 0
+        self.storage_location = 1 if self.left == self.right else 0
 
 
-# def eq_op(a, b, c):
-#     """
-#     4: Set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise.
-#     :param a:
-#     :param b:
-#     :param c:
-#     :return:
-#     """
-#     pass
+class GreaterThan(Operation):
+    """5: Set <a> to 1 if <b> is greater than <c>; set it to 0 otherwise."""
+    num_args = 3
+
+    def __init(self, a, b, c):
+        self.storage_location = a
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        self.storage_location.value = 1 if self.left > self.right else 0
 
 
-def gt_op(a, b, c):
-    """
-    5: Set <a> to 1 if <b> is greater than <c>; set it to 0 otherwise.
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+class Jump(Operation):
+    """6: Jump to <a>."""
+    num_args = 1
+
+    def __init__(self, a):
+        self.destination = a
+
+    def operate(self):
+        return self.destination.value
 
 
-def jmp_op(a):
-    """
-    6: Jump to <a>.
-    :param a:
-    :return:
-    """
-    pass
+class JumpTrue(Operation):
+    """7: If <a> is nonzero, jump to <b>."""
+    num_args = 2
+
+    def __init__(self, a, b):
+        self.condition = a
+        self.destination = b
+
+    def operate(self):
+        if self.condition.value != 0:
+            return self.destination.value
 
 
-def jt_op(a, b):
-    """
-    7: If <a> is nonzero, jump to <b>.
-    :param a:
-    :param b:
-    :return:
-    """
-    pass
+class JumpFalse(Operation):
+    """8: If <a> is zero, jump to <b>."""
+    num_args = 2
+
+    def __init__(self, a, b):
+        self.condition = a
+        self.destination = b
+
+    def operate(self):
+        if self.condition.value == 0:
+            return self.destination.value
 
 
-def jf_op(a, b):
-    """
-    8: If <a> is zero, jump to <b>.
-    :param a:
-    :param b:
-    :return:
-    """
-    pass
+class Add(Operation):
+    """9: Assign into <a> the sum of <b> and <c> (modulo 32768)."""
+    num_args = 3
+
+    def __init__(self, a, b, c):
+        self.storage_location = a
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        self.storage_location.value = (self.left + self.right) % 32768
 
 
-def add_op(a, b, c):
-    """
-    9: Assign into <a> the sum of <b> and <c> (modulo 32768).
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+class Multiply(Operation):
+    """10: Store into <a> the product of <b> and <c> (modulo 32768)."""
+    num_args = 3
+
+    def __init__(self, a, b, c):
+        self.storage_location = a
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        self.storage_location.value = (self.left * self.right) % 32768
 
 
-def mult_op(a, b, c):
-    """
-    10: Store into <a> the product of <b> and <c> (modulo 32768).
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+class Modulo(Operation):
+    """11: Store into <a> the remainder of <b> divided by <c>."""
+    num_args = 3
+
+    def __init__(self, a, b, c):
+        self.storage_location = a
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        self.storage_location.value = self.left % self.right
 
 
-def mod_op(a, b, c):
-    """
-    11: Store into <a> the remainder of <b> divided by <c>.
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+class And(Operation):
+    """12: Stores into <a> the bitwise and of <b> and <c>."""
+    num_args = 3
+
+    def __init__(self, a, b, c):
+        self.storage_location = a
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        pass
 
 
-def and_op(a, b, c):
-    """
-    12: Stores into <a> the bitwise and of <b> and <c>.
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+class Or(Operation):
+    """13: Stores into <a> the bitwise or of <b> and <c>."""
+    num_args = 3
+
+    def __init__(self, a, b, c):
+        self.storage_location = a
+        self.left = b
+        self.right = c
+
+    def operate(self):
+        pass
 
 
-def or_op(a, b, c):
-    """
-    13: Stores into <a> the bitwise or of <b> and <c>.
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
-    pass
+class Not(Operation):
+    """14: Stores 15-bit bitwise inverse of <b> in <a>."""
+    num_args = 2
+
+    def __init__(self, a, b):
+        self.storage_location = a
+        self.original = b
+
+    def operate(self):
+        pass
 
 
-def not_op(a, b):
-    """
-    14: Stores 15-bit bitwise inverse of <b> in <a>.
-    :param a:
-    :param b:
-    :return:
-    """
-    pass
+class ReadMemory(Operation):
+    """15: Read memory at address <b> and write it to <a>."""
+    num_args = 2
+
+    def __init__(self, a ,b):
+        self.storage_location = a
+        self.memory_address = b
+
+    def operate(self):
+        pass
+        # self.storage_location.value = memory[self.memory_address]
 
 
-def rmem_op(a, b):
-    """
-    15: Read memory at address <b> and write it to <a>.
-    :param a:
-    :param b:
-    :return:
-    """
-    pass
+class WriteMemory(Operation):
+    """16: Write the value from <b> into memory at address <a>."""
+    num_args = 2
+
+    def __init__(self, a, b):
+        self.memory_address = a
+        self.storage_location = b
+
+    def operate(self):
+        pass
+        # memory[memory_address].value = self.storage_location.value
 
 
-def wmem_op(a, b):
-    """
-    16: Write the value from <b> into memory at address <a>.
-    :param a:
-    :param b:
-    :return:
-    """
-    pass
+class Call(Operation):
+    """17: Write the address of the next instruction to the stack and jump to <a>."""
+    num_args = 1
+
+    def __init__(self, a):
+        self.destination = a
+
+    def operate(self):
+        pass
 
 
-def call_op(a):
-    """
-    17: Write the address of the next instruction to the stack and jump to <a>.
-    :param a:
-    :return:
-    """
-    pass
+class Return(Operation):
+    """18: Remove the top element from the stack and jump to it; empty stack = halt."""
+    num_args = 0
+
+    def __init__(self):
+        pass
+
+    def operate(self):
+        pass
 
 
-def ret_op():
-    """
-    18: Remove the top element from the stack and jump to it; empty stack = halt.
-    :return:
-    """
-    pass
+class Out(Operation):
+    """19: write the character represented by ascii code <a> to the terminal."""
+    num_args = 1
+
+    def __init__(self, a):
+        self.character_token = a
+
+    def operate(self):
+        return chr(self.character_token.value)
 
 
-def out_op(a):
-    """
-    19: write the character represented by ascii code <a> to the terminal.
-    :param a:
-    :return:
-    """
-    pass
-
-
-def in_op(a):
+class In(Operation):
     """
     20: Read a character from the terminal and write its ascii code to <a>;
     it can be assumed that once input starts, it will continue until a newline is encountered;
     this means that you can safely read whole lines from the keyboard and trust that they will be fully read.
-    :param a:
-    :return:
     """
-    pass
+    num_args = 1
+
+    def __init__(self, a):
+        pass
+
+    def operate(self):
+        pass
 
 
-def noop_op():
-    """
-    21: no operation
-    :return:
-    """
-    pass
+class NoOp(Operation):
+    """21: No operation."""
+    num_args = 0
+
+    def __init__(self):
+        pass
+
+    def operate(self):
+        pass
 
 
 opcode_map = {
     0: Halt,
     1: Set,
     2: Push,
-    3: pop_op,
-    4: eq_op,
-    5: gt_op,
-    6: jmp_op,
-    7: jt_op,
-    8: jf_op,
-    9: add_op,
-    10: mult_op,
-    11: mod_op,
-    12: and_op,
-    13: or_op,
-    14: not_op,
-    15: rmem_op,
-    16: wmem_op,
-    17: call_op,
-    18: ret_op,
-    19: out_op,
-    20: in_op,
-    21: noop_op
+    3: Pop,
+    4: Equal,
+    5: GreaterThan,
+    6: Jump,
+    7: JumpTrue,
+    8: JumpFalse,
+    9: Add,
+    10: Multiply,
+    11: Modulo,
+    12: And,
+    13: Or,
+    14: Not,
+    15: ReadMemory,
+    16: WriteMemory,
+    17: Call,
+    18: Return,
+    19: Out,
+    20: In,
+    21: NoOp
 }
 
 
