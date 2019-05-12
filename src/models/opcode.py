@@ -166,12 +166,13 @@ class Modulo(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.storage_location = a
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        self.storage_location.value = self.left % self.right
+        self.register.value = self.left.value % self.right.value
+        return self.register
 
 
 class And(Operation):
@@ -225,7 +226,7 @@ class ReadMemory(Operation):
     num_args = 2
 
     def __init__(self, a ,b):
-        self.storage_location = a
+        self.register: Register = a
         self.memory_address = b
 
     def operate(self):
@@ -238,8 +239,10 @@ class WriteMemory(Operation):
     num_args = 2
 
     def __init__(self, a, b):
-        self.memory_address = a
-        self.storage_location = b
+        self.target = a
+        self.source = b
+        # self.memory_address = a
+        # self.register: Register = b
 
     def operate(self):
         pass
@@ -254,7 +257,7 @@ class Call(Operation):
         self.destination = a
 
     def operate(self):
-        pass
+        return self.destination.value
 
 
 class Return(Operation):

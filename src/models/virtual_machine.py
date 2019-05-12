@@ -71,7 +71,7 @@ class VirtualMachine:
                 print("HALT")
                 operation.operate()
 
-            if token.value in [1, 4, 5, 9, 10, 12, 13, 14]:
+            if token.value in [1, 4, 5, 9, 10, 11, 12, 13, 14]:
                 updated_register = operation.operate()
                 print(f'updated register: {updated_register}')
                 self.registers[updated_register.address] = updated_register
@@ -92,6 +92,31 @@ class VirtualMachine:
                 if destination:
                     print(f'jump! token value: {token.value} destination: {destination}')
                     self.process(tokens=tokens, starting_address=destination, output=output)
+
+            if token.value == 15:
+                memory_value = tokens[operation.memory_address.value].value
+                print(f'memory value: {memory_value}')
+                operation.register.value = memory_value
+                self.registers[operation.register.address] = operation.register
+
+            if token.value == 16:
+                print(f'next token: {tokens[token.address + 1]}')
+                print(f'and then: {tokens[token.address + 2]}')
+                print(f'registers: {self.registers}')
+                print(f'Write the value from {operation.source} to the memory at address {operation.target}')
+
+                # new_value = self.registers[operation.register.address].value
+                # target_memory = tokens[operation.memory_address.value]
+                # print(f'target memory: {target_memory}')
+                # target_memory.value = new_value
+                # tokens[operation.memory_address.value] = target_memory
+                # print(f'updated target memory: {tokens[operation.memory_address.value]}')
+
+            if token.value == 17:
+                self.stack.push(token.address + 2)
+                destination = operation.operate()
+                print(f'jump! token value: {token.value} destination: {destination}')
+                self.process(tokens=tokens, starting_address=destination, output=output)
 
             if token.value == 19:
                 # operation.operate()

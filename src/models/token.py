@@ -53,6 +53,10 @@ class Unknown(Token):
     def __init__(self, value: int, address: int):
         super().__init__('UNKNOWN', value, address)
 
+    def __repr__(self):
+        return f'{self.__class__.__name__} (' \
+            f'value={self.value}, address={self.address})'
+
     @staticmethod
     def is_valid():
         return False
