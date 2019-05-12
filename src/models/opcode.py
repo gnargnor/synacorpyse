@@ -51,7 +51,7 @@ class Push(Operation):
     num_args = 1
 
     def __init__(self, a):
-        self.value = a
+        self.argument = a
 
     def operate(self):
         pass
@@ -62,7 +62,7 @@ class Pop(Operation):
     num_args = 1
 
     def __init__(self, a):
-        self.destination = a
+        self.register = a
 
     def operate(self):
         pass
@@ -73,25 +73,27 @@ class Equal(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.storage_location = a
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        self.storage_location = 1 if self.left == self.right else 0
+        self.register.value = 1 if self.left.value == self.right.value else 0
+        return self.register
 
 
 class GreaterThan(Operation):
     """5: Set <a> to 1 if <b> is greater than <c>; set it to 0 otherwise."""
     num_args = 3
 
-    def __init(self, a, b, c):
-        self.storage_location = a
+    def __init__(self, a, b, c):
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        self.storage_location.value = 1 if self.left > self.right else 0
+        self.register.value = 1 if self.left.value > self.right.value else 0
+        return self.register
 
 
 class Jump(Operation):
@@ -150,12 +152,13 @@ class Multiply(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.storage_location = a
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        self.storage_location.value = (self.left * self.right) % 32768
+        self.register.value = (self.left.value * self.right.value) % 32768
+        return self.register
 
 
 class Modulo(Operation):
@@ -176,12 +179,13 @@ class And(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.storage_location = a
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        pass
+        self.register.value = (self.left.value & self.right.value)
+        return self.register
 
 
 class Or(Operation):
@@ -189,12 +193,13 @@ class Or(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.storage_location = a
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        pass
+        self.register.value = (self.left.value | self.right.value)
+        return self.register
 
 
 class Not(Operation):
@@ -202,11 +207,17 @@ class Not(Operation):
     num_args = 2
 
     def __init__(self, a, b):
-        self.storage_location = a
+        self.register: Register = a
         self.original = b
 
     def operate(self):
-        pass
+        def bit_not(n, numbits=15):
+            return (1 << numbits) - 1 - n
+
+        bitty = bit_not(self.original.value)
+        print(bitty)
+        self.register.value = bitty
+        return self.register
 
 
 class ReadMemory(Operation):

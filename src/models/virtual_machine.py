@@ -71,10 +71,16 @@ class VirtualMachine:
                 print("HALT")
                 operation.operate()
 
-            if token.value == 1:
+            if token.value in [1, 4, 5, 9, 10, 12, 13, 14]:
                 updated_register = operation.operate()
                 print(f'updated register: {updated_register}')
                 self.registers[updated_register.address] = updated_register
+
+            if token.value == 2:
+                self.stack.push(operation.argument.value)
+
+            if token.value == 3:
+                self.registers[operation.register.address].value = self.stack.pop()
 
             if token.value == 6:
                 destination = operation.operate()
@@ -86,11 +92,6 @@ class VirtualMachine:
                 if destination:
                     print(f'jump! token value: {token.value} destination: {destination}')
                     self.process(tokens=tokens, starting_address=destination, output=output)
-
-            if token.value == 9:
-                updated_register = operation.operate()
-                print(f'updated register: {updated_register}')
-                self.registers[updated_register.address] = updated_register
 
             if token.value == 19:
                 # operation.operate()
