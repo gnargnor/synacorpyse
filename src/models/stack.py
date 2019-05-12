@@ -1,7 +1,5 @@
 from typing import List
 
-from models.value import Value
-
 
 class EmptyStackError(Exception):
     def __init__(self):
@@ -15,15 +13,15 @@ class Stack:
         return self.__stack
 
     def __init__(self):
-        self.__stack: List[Value] = []
+        self.__stack: List[int] = []
 
     def __len__(self):
         return len(self.stack)
 
-    def push(self, value: Value) -> None:
+    def push(self, value) -> None:
         self.stack.append(value)
 
-    def pop(self) -> Value:
+    def pop(self):
         if not len(self.stack):
             raise EmptyStackError
         return self.stack.pop()

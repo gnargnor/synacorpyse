@@ -42,7 +42,7 @@ class Argument(Token):
 
     def __repr__(self):
         return f'{self.__class__.__name__} (' \
-            f'value={self.value}, address={self.address}, arg_num={self.arg_num}'
+            f'value={self.value}, address={self.address}, arg_num={self.arg_num})'
 
     @staticmethod
     def is_valid():

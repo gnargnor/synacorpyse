@@ -2,9 +2,7 @@ from abc import abstractmethod, ABCMeta
 import sys
 
 
-from models.memory import Memory
 from models.register import Register
-from models.stack import Stack
 
 
 class Operation(metaclass=ABCMeta):
@@ -41,10 +39,11 @@ class Set(Operation):
 
     def __init__(self, a, b):
         self.register: Register = a
-        self.value: int = b
+        self.token = b
 
     def operate(self):
-        self.register.value(self.value)
+        self.register.value = self.token.value
+        return self.register
 
 
 class Push(Operation):
@@ -137,12 +136,13 @@ class Add(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.storage_location = a
+        self.register: Register = a
         self.left = b
         self.right = c
 
     def operate(self):
-        self.storage_location.value = (self.left + self.right) % 32768
+        self.register.value = (self.left.value + self.right.value) % 32768
+        return self.register
 
 
 class Multiply(Operation):
@@ -265,6 +265,7 @@ class Out(Operation):
         self.character_token = a
 
     def operate(self):
+        # print(chr(self.character_token.value), end="")
         return chr(self.character_token.value)
 
 

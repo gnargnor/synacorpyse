@@ -1,6 +1,3 @@
-from models.value import Value
-
-
 class Register:
     @property
     def address(self):
@@ -17,3 +14,7 @@ class Register:
     def __init__(self, address):
         self.__address = address
         self.value = 0
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} (' \
+            f'value={self.value}, address={self.address})'
