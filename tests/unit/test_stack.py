@@ -1,6 +1,6 @@
 import pytest
 
-from models.stack import Stack, EmptyStackError
+from stack import Stack, EmptyStackError
 
 
 def test_push_stack():

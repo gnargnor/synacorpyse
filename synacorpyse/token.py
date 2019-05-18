@@ -1,4 +1,4 @@
-from models import opcode
+from synacorpyse import opcode
 
 
 class InvalidCommandValueError(Exception):
@@ -36,7 +36,7 @@ class Command(Token):
 
 
 class Argument(Token):
-    def __init__(self, value: int, address: int, arg_num):
+    def __init__(self, value: int, address: int = None, arg_num=None):
         super().__init__('ARGUMENT', value, address)
         self.arg_num = arg_num
 
