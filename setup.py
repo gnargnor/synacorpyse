@@ -16,15 +16,14 @@ setup(
     author='Logan Kelly',
     author_email='logankelly@protonmail.com',
 
-    packages=find_packages(where='src'),
-    package_dir={'': 'src'},
+    packages=find_packages(),
 
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='tests',
     entry_points={
         'console_scripts': [
-            'read-binary = read_binary.__main__:main',
+            'synacorpyse = synacorpyse.__main__:main',
         ]
     }
 )

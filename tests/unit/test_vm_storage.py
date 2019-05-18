@@ -1,7 +1,7 @@
-from models.memory import Memory
-from models.register import Register
-from models.stack import Stack
-from models.virtual_machine import VirtualMachine
+from memory import Memory
+from synacorpyse import Register
+from stack import Stack
+from virtual_machine import VirtualMachine
 
 
 def test_init_registers():

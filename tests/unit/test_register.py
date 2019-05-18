@@ -1,6 +1,6 @@
 import pytest
 
-from models.register import Register
+from register import Register
 
 
 def test_register_address():
