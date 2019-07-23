@@ -401,19 +401,19 @@ class WriteMemory(Operation):
     def __init__(self, a, b):
         if print_letters_written_to_memory:
             print(chr(b.value), end='')
-        self.target = a
-        self.source_token = b
+        self.target_address = a.value
+        self.source_token = b.value
         if op_code_logs:
             print('#write memory op')
-            print(f'==> target_address: {a}')
-            print(f'==> source token: {b}')
+            print(f'==> target_address: {a.value}')
+            print(f'==> source token: {b.value}')
         # self.memory_address = a
         # self.register: Register = b
 
     def operate(self, current_address, callback):
         message = Message(
             action=Action.write_memory,
-            args=[self.target, self.source_token]
+            args=[self.target_address, self.source_token]
         )
         return callback(message)
         # memory[memory_address].value = self.storage_location.value

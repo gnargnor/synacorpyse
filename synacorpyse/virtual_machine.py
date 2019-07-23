@@ -33,7 +33,11 @@ class VirtualMachine:
         return self.__registers
 
     def write_register(self, address, value):
+        print('hey hey')
+        print(f'write register address: {address}')
+        print(f'write register value: {value}')
         self.__registers[address].value = value
+        print(self.__registers[address])
         self.memory.set_next()
 
     def read_register(self, address):
@@ -107,9 +111,9 @@ class VirtualMachine:
         print(f'reg num: {address}')
         print(f'memory address: {memory_address}')
         print(f'mem val: {mem_val}')
-        # self.write_register(address, mem_val)
+        self.write_register(address, mem_val)
         # self.__registers[address].value = mem_val
-        self.memory.write(address, mem_val)
+        # self.memory.write(address, mem_val)
 
         return self.memory.set_next()
 
@@ -117,7 +121,7 @@ class VirtualMachine:
         print('write memory')
         print(target)
         print(token)
-        self.memory.write(target.value, token.value)
+        self.memory.write(target, token)
         return self.memory.set_next()
 
     def update_display(self, ascii_code):
