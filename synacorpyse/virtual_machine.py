@@ -8,14 +8,14 @@ from synacorpyse.register import Register
 from synacorpyse.stack import Stack
 from synacorpyse.token import Tokens
 
-sys.setrecursionlimit(8000)
+# sys.setrecursionlimit(10000)
 
 
 class VirtualMachine:
     @property
     def actions(self):
         return {
-            Action.update_register: self.update_register,
+            Action.update_register: self.write_register,
             Action.read_memory: self.read_memory,
             Action.write_memory: self.write_memory,
             Action.update_display: self.update_display,
@@ -29,8 +29,15 @@ class VirtualMachine:
         }
 
     @property
-    def registers(self):
+    def registers(self) -> List[Register]:
         return self.__registers
+
+    def write_register(self, address, value):
+        self.__registers[address].value = value
+        self.memory.set_next()
+
+    def read_register(self, address):
+        return self.__registers[address].value
 
     @property
     def memory(self):
@@ -60,7 +67,7 @@ class VirtualMachine:
 
     @staticmethod
     def init_registers(num_regs):
-        return [Register(reg_num=reg_num) for reg_num, _ in enumerate(range(num_regs))]
+        return [Register(address=address) for address, _ in enumerate(range(num_regs))]
 
     @staticmethod
     def init_stack():
@@ -79,50 +86,66 @@ class VirtualMachine:
 
         return execute
 
-    def update_register(self, register):
-        self.registers[register.reg_num] = register
+    def set(self, address, value):
+        self.__registers[address].value = value
+        self.memory.set_next()
 
-    def push_stack(self, token):  # Push the value of the token only.  Address is irrelevant.
-        self.stack.push(token.value)
+    def push_stack(self, value):  # Push the value of the token only.  Address is irrelevant.
+        print('push stack')
+        self.stack.push(value)
+        return self.memory.set_next()
 
-    def pop_stack(self, register):
+    def pop_stack(self, address):
+        print('pop stack')
         value = self.stack.pop()
-        self.registers[register.reg_num].value = value
+        self.write_register(address, value)
+        return self.memory.set_next()
 
-    def read_memory(self, register, memory_address):
-        memory = self.memory.tokens[memory_address.value]
-        self.registers[register.reg_num].value = memory.value
+    def read_memory(self, address, memory_address):
+        print('read memory vm')
+        mem_val = self.memory.read(memory_address)
+        print(f'reg num: {address}')
+        print(f'memory address: {memory_address}')
+        print(f'mem val: {mem_val}')
+        # self.write_register(address, mem_val)
+        # self.__registers[address].value = mem_val
+        self.memory.write(address, mem_val)
 
-    def write_memory(self, target, source):
-        # print(self.memory.tokens[target.value])
-        self.memory.tokens[target.value].value = source.value
-        # print(self.memory.tokens[target.value])
-        # pass
+        return self.memory.set_next()
+
+    def write_memory(self, target, token):
+        print('write memory')
+        print(target)
+        print(token)
+        self.memory.write(target.value, token.value)
+        return self.memory.set_next()
 
     def update_display(self, ascii_code):
-        print(chr(ascii_code.value))
+        print(chr(ascii_code.value), end='')
         self.output += chr(ascii_code.value)
+        return self.memory.set_next()
 
-    def jump(self, address):
-        memory_navigator = self.memory.gen_next(address=address.value)
-        return self.process(memory_navigator)
+    def jump(self, destination):
+        print('jump')
+        print(f'destination: {destination}')
+        return self.memory.set_next(destination)
 
     def halt(self):
-        # print(f'output: \n{self.output}')
-        # print("HALT")
-        sys.exit()
+        print('halt')
+        return self.memory.set_next(-1)
 
     def call(self, current_address, destination):
+        print('call')
         self.stack.push(current_address + 2)
-        return self.jump(destination)
+        return self.memory.set_next(destination)
 
     def ret(self):
+        print('ret')
         destination = self.stack.pop()
-        memory_navigator = self.memory.gen_next(address=destination)
-        return self.process(memory_navigator)
+        return self.memory.set_next(destination)
 
     def no_op(self):
-        pass
+        return self.memory.set_next()
 
     def load(self, source_file):
         input_values = self.interpret_binary(source_file)
@@ -131,19 +154,38 @@ class VirtualMachine:
         self.__init_memory(tokens)
 
     def run(self):
-        memory_navigator = self.memory.gen_next(address=0)
-        self.process(memory_navigator)
+        while True:
+            try:
+                token = self.memory.current_token()
+                if token.type != 'COMMAND':
+                    self.memory.set_next()
+                    continue
+
+                args = self.get_args(token)
+                operation = token.operation(*args)
+                execute_action = operation.operate(token.address, self.callback)
+                execute_action()
+                print(self.memory.position)
+                if self.memory.position == -1:
+                    break
+            except Exception as ex:
+                print('You fucked up.')
+                print(ex)
+                print(f'current token: {token}')
+                print(f'current args: {args}')
+                print(self.output)
+                raise ex
+        print('Finished.')
+        print(self.output)
+        sys.exit()
 
     def process(self, memory_navigator):
-        # print()
         for token in memory_navigator:
             if token.type != 'COMMAND':
                 continue
 
             args = self.get_args(token)
-
             operation = token.operation(*args)
-
             execute_action = operation.operate(token.address, self.callback)
             execute_action()
 
@@ -153,9 +195,6 @@ class VirtualMachine:
         if num_args > 0:
             first_arg = token.address + 1
             args = self.memory.tokens[first_arg:first_arg + num_args]
-
-        # for arg in args:
-        #     arg = self.registers[arg.value % 32768] if 32768 <= arg.value <= 32775 else arg
 
         args = [self.registers[arg.value % 32768]  # replace interpreted value with register value
                 if (32768 <= arg.value <= 32775)
