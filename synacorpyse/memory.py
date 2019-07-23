@@ -23,7 +23,8 @@ class Memory:
         return self.__tokens[self.__position]
 
     def write(self, location, token):
-        self.__tokens[location] = token
+        print(f'token at location {location}: {self.__tokens[location]}')
+        self.__tokens[location].value = token
 
     def read(self, location):
         print(f'read memory in memory class: {self.__tokens[location]}')
