@@ -4,6 +4,9 @@ from synacorpyse.constants import Action
 from synacorpyse.message import Message
 from synacorpyse.register import Register
 
+op_code_logs = True
+print_letters_written_to_memory = False
+
 
 class Operation(metaclass=ABCMeta):
     @property
@@ -48,14 +51,17 @@ class Set(Operation):
     num_args = 2
 
     def __init__(self, a, b):
-        self.register: Register = a
+        if op_code_logs:
+            print('#set')
+            print(f'==> a: {a}')
+            print(f'==> b: {b}')
+        self.address = a.address
         self.token = b
 
     def operate(self, current_address, callback):
-        self.register.value = self.token.value
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, self.token.value]
         )
         return callback(message)
 
@@ -66,12 +72,15 @@ class Push(Operation):
     num_args = 1
 
     def __init__(self, a):
-        self.token = a
+        self.token_value = a.value
+        if op_code_logs:
+            print(f'#push op')
+            print(f'==> address: {a.value}')
 
     def operate(self, current_address, callback):
         message = Message(
             action=Action.push_stack,
-            args=[self.token]
+            args=[self.token_value]
         )
         return callback(message)
 
@@ -82,12 +91,15 @@ class Pop(Operation):
     num_args = 1
 
     def __init__(self, a):
-        self.register = a
+        self.address = a.address
+        if op_code_logs:
+            print(f'#pop op')
+            print(f'==> address: {a}')
 
     def operate(self, current_address, callback):
         message = Message(
             action=Action.pop_stack,
-            args=[self.register]
+            args=[self.address]
         )
         return callback(message)
 
@@ -98,15 +110,20 @@ class Equal(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print(f'#equal op')
+            print(f'==> reg num: {self.address}')
+            print(f'==> b: {b}')
+            print(f'==> c: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = 1 if self.left.value == self.right.value else 0
+        new_value = 1 if self.left.value == self.right.value else 0
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -117,15 +134,20 @@ class GreaterThan(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print(f'#greater than op: ')
+            print(f'==> reg num: {self.address}')
+            print(f'==> b: {b}')
+            print(f'==> c: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = 1 if self.left.value > self.right.value else 0
+        new_value = 1 if self.left.value > self.right.value else 0
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -136,7 +158,11 @@ class Jump(Operation):
     num_args = 1
 
     def __init__(self, a):
-        self.destination = a
+        self.destination = a.value
+        if op_code_logs:
+            print('#jump op')
+            print(f'==> destination: {self.destination}')
+
 
     def operate(self, current_address, callback):
         message = Message(
@@ -154,12 +180,16 @@ class JumpTrue(Operation):
     def __init__(self, a, b):
         self.condition = a
         self.destination = b
+        if op_code_logs:
+            print('#jump true op')
+            print(f'==> condition: {self.condition}')
+            print(f'==> destination: {self.destination}')
 
     def operate(self, current_address, callback):
         if self.condition.value != 0:
             message = Message(
                 action=Action.jump,
-                args=[self.destination]
+                args=[self.destination.value]
             )
         else:
             message = Message(
@@ -177,12 +207,16 @@ class JumpFalse(Operation):
     def __init__(self, a, b):
         self.condition = a
         self.destination = b
+        if op_code_logs:
+            print(f'#jump false op')
+            print(f'==> condition: {self.condition}')
+            print(f'==> destination: {self.destination}')
 
     def operate(self, current_address, callback):
         if self.condition.value == 0:
             message = Message(
                 action=Action.jump,
-                args=[self.destination]
+                args=[self.destination.value]
             )
         else:
             message = Message(
@@ -198,15 +232,20 @@ class Add(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print('#add op')
+            print(f'==> address: {self.address}')
+            print(f'==> left: {b}')
+            print(f'==> right: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = (self.left.value + self.right.value) % 32768
+        new_value = (self.left.value + self.right.value) % 32768
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -217,15 +256,20 @@ class Multiply(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print('#mult op')
+            print(f'==> address: {self.address}')
+            print(f'==> left: {b}')
+            print(f'==> right: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = (self.left.value * self.right.value) % 32768
+        new_value = (self.left.value * self.right.value) % 32768
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -236,15 +280,20 @@ class Modulo(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print('#mod op')
+            print(f'==> address: {self.address}')
+            print(f'==> left: {b}')
+            print(f'==> right: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = self.left.value % self.right.value
+        new_value = self.left.value % self.right.value
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -255,15 +304,20 @@ class And(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print('#and op')
+            print(f'==> address: {self.address}')
+            print(f'==> left: {b}')
+            print(f'==> right: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = (self.left.value & self.right.value)
+        new_value = (self.left.value & self.right.value)
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -274,15 +328,20 @@ class Or(Operation):
     num_args = 3
 
     def __init__(self, a, b, c):
-        self.register: Register = a
+        self.address = a.address
         self.left = b
         self.right = c
+        if op_code_logs:
+            print('#or op')
+            print(f'==> address: {self.address}')
+            print(f'==> left: {b}')
+            print(f'==> right: {c}')
 
     def operate(self, current_address, callback):
-        self.register.value = (self.left.value | self.right.value)
+        new_value = (self.left.value | self.right.value)
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -293,17 +352,21 @@ class Not(Operation):
     num_args = 2
 
     def __init__(self, a, b):
-        self.register: Register = a
+        self.address = a.address
         self.original = b
+        if op_code_logs:
+            print('#not op')
+            print(f'==> address: {self.address}')
+            print(f'==> orig: {b}')
 
     def operate(self, current_address, callback):
         def bit_not(n, numbits=15):
             return (1 << numbits) - 1 - n
 
-        self.register.value = bit_not(self.original.value)
+        new_value = bit_not(self.original.value)
         message = Message(
             action=Action.update_register,
-            args=[self.register]
+            args=[self.address, new_value]
         )
         return callback(message)
 
@@ -314,16 +377,20 @@ class ReadMemory(Operation):
     num_args = 2
 
     def __init__(self, a, b):
-        self.register: Register = a
-        self.memory_address = b
+        self.target_address = a.address
+        print(f'b: {b}')
+        self.memory_address = b.value
+        if op_code_logs:
+            print('#read memory opcode')
+            print(f'==> address: {self.target_address}')
+            print(f'==> mem address: {self.memory_address}')
 
     def operate(self, current_address, callback):
         message = Message(
             action=Action.read_memory,
-            args=[self.register, self.memory_address]
+            args=[self.target_address, self.memory_address]
         )
         return callback(message)
-        # self.storage_location.value = memory[self.memory_address]
 
 
 class WriteMemory(Operation):
@@ -332,18 +399,21 @@ class WriteMemory(Operation):
     num_args = 2
 
     def __init__(self, a, b):
-        # print('88888888888888888888888888888888888888888888888')
-        # print(a)
-        print(chr(b.value), end='')
+        if print_letters_written_to_memory:
+            print(chr(b.value), end='')
         self.target = a
-        self.source = b
+        self.source_token = b
+        if op_code_logs:
+            print('#write memory op')
+            print(f'==> target_address: {a}')
+            print(f'==> source token: {b}')
         # self.memory_address = a
         # self.register: Register = b
 
     def operate(self, current_address, callback):
         message = Message(
             action=Action.write_memory,
-            args=[self.target, self.source]
+            args=[self.target, self.source_token]
         )
         return callback(message)
         # memory[memory_address].value = self.storage_location.value
@@ -355,7 +425,10 @@ class Call(Operation):
     num_args = 1
 
     def __init__(self, a):
-        self.destination = a
+        self.destination = a.value
+        if op_code_logs:
+            print(f'#call op')
+            print(f'==> destination: {a}')
 
     def operate(self, current_address, callback):
         message = Message(
@@ -371,7 +444,8 @@ class Return(Operation):
     num_args = 0
 
     def __init__(self):
-        pass
+        if op_code_logs:
+            print('#return op')
 
     def operate(self, current_address, callback):
         message = Message(
@@ -388,6 +462,9 @@ class Out(Operation):
 
     def __init__(self, a):
         self.ascii_code = a
+        if op_code_logs:
+            print('#out op')
+            print(f'==> ascii code: {a}')
 
     def operate(self, current_address, callback):
         message = Message(
@@ -407,9 +484,10 @@ class In(Operation):
     num_args = 1
 
     def __init__(self, a):
-        print(type(a))
         self.write_location = a
-        pass
+        if op_code_logs:
+            print(f'#in op')
+            print(f'==> write location: {a}')
 
     def operate(self, current_address, callback):
         user_input = input('type stuff: ')
@@ -427,7 +505,8 @@ class NoOp(Operation):
     num_args = 0
 
     def __init__(self):
-        pass
+        if op_code_logs:
+            print('#no op')
 
     def operate(self, current_address, callback):
         message = Message(
