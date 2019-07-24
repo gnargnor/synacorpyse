@@ -5,7 +5,7 @@ from synacorpyse.message import Message
 from synacorpyse.register import Register
 
 op_code_logs = False
-print_letters_written_to_memory = False
+print_letters_written_to_memory = True
 
 
 class Operation(metaclass=ABCMeta):
