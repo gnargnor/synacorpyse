@@ -8,8 +8,7 @@ from synacorpyse.register import Register
 from synacorpyse.stack import Stack
 from synacorpyse.token import Tokens
 
-# sys.setrecursionlimit(10000)
-real_time_output = True
+real_time_output = False
 vm_super_logs = False
 
 
@@ -36,7 +35,6 @@ class VirtualMachine:
 
     def write_register(self, address, value):
         if vm_super_logs:
-            print('hey hey')
             print(f'write register address: {address}')
             print(f'write register value: {value}')
         self.__registers[address].value = value
