@@ -4,7 +4,7 @@ from synacorpyse.constants import Action
 from synacorpyse.message import Message
 from synacorpyse.register import Register
 
-op_code_logs = True
+op_code_logs = False
 print_letters_written_to_memory = False
 
 
@@ -378,7 +378,6 @@ class ReadMemory(Operation):
 
     def __init__(self, a, b):
         self.target_address = a.address
-        print(f'b: {b}')
         self.memory_address = b.value
         if op_code_logs:
             print('#read memory opcode')

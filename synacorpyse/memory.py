@@ -1,3 +1,5 @@
+memory_super_logs = False
+
 class Memory:
     @property
     def tokens(self):  # Are tokens the same as the memory?
@@ -23,9 +25,11 @@ class Memory:
         return self.__tokens[self.__position]
 
     def write(self, location, token):
-        print(f'token at location {location}: {self.__tokens[location]}')
+        if memory_super_logs:
+            print(f'token at location {location}: {self.__tokens[location]}')
         self.__tokens[location].value = token
 
     def read(self, location):
-        print(f'read memory in memory class: {self.__tokens[location]}')
+        if memory_super_logs:
+            print(f'read memory in memory class: {self.__tokens[location]}')
         return self.__tokens[location].value

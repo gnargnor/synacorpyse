@@ -9,6 +9,8 @@ from synacorpyse.stack import Stack
 from synacorpyse.token import Tokens
 
 # sys.setrecursionlimit(10000)
+real_time_output = True
+vm_super_logs = False
 
 
 class VirtualMachine:
@@ -33,11 +35,13 @@ class VirtualMachine:
         return self.__registers
 
     def write_register(self, address, value):
-        print('hey hey')
-        print(f'write register address: {address}')
-        print(f'write register value: {value}')
+        if vm_super_logs:
+            print('hey hey')
+            print(f'write register address: {address}')
+            print(f'write register value: {value}')
         self.__registers[address].value = value
-        print(self.__registers[address])
+        if vm_super_logs:
+            print(self.__registers[address])
         self.memory.set_next()
 
     def read_register(self, address):
@@ -95,22 +99,26 @@ class VirtualMachine:
         self.memory.set_next()
 
     def push_stack(self, value):  # Push the value of the token only.  Address is irrelevant.
-        print('push stack')
+        if vm_super_logs:
+            print('push stack')
         self.stack.push(value)
         return self.memory.set_next()
 
     def pop_stack(self, address):
-        print('pop stack')
+        if vm_super_logs:
+            print('pop stack')
         value = self.stack.pop()
         self.write_register(address, value)
         return self.memory.set_next()
 
     def read_memory(self, address, memory_address):
-        print('read memory vm')
+        if vm_super_logs:
+            print('read memory vm')
         mem_val = self.memory.read(memory_address)
-        print(f'reg num: {address}')
-        print(f'memory address: {memory_address}')
-        print(f'mem val: {mem_val}')
+        if vm_super_logs:
+            print(f'reg num: {address}')
+            print(f'memory address: {memory_address}')
+            print(f'mem val: {mem_val}')
         self.write_register(address, mem_val)
         # self.__registers[address].value = mem_val
         # self.memory.write(address, mem_val)
@@ -118,33 +126,39 @@ class VirtualMachine:
         return self.memory.set_next()
 
     def write_memory(self, target, token):
-        print('write memory')
-        print(target)
-        print(token)
+        if vm_super_logs:
+            print('write memory')
+            print(target)
+            print(token)
         self.memory.write(target, token)
         return self.memory.set_next()
 
     def update_display(self, ascii_code):
-        print(chr(ascii_code.value), end='')
+        if real_time_output:
+            print(chr(ascii_code.value), end='')
         self.output += chr(ascii_code.value)
         return self.memory.set_next()
 
     def jump(self, destination):
-        print('jump')
-        print(f'destination: {destination}')
+        if vm_super_logs:
+            print('jump')
+            print(f'destination: {destination}')
         return self.memory.set_next(destination)
 
     def halt(self):
-        print('halt')
+        if vm_super_logs:
+            print('halt')
         return self.memory.set_next(-1)
 
     def call(self, current_address, destination):
-        print('call')
+        if vm_super_logs:
+            print('call')
         self.stack.push(current_address + 2)
         return self.memory.set_next(destination)
 
     def ret(self):
-        print('ret')
+        if vm_super_logs:
+            print('ret')
         destination = self.stack.pop()
         return self.memory.set_next(destination)
 
@@ -169,7 +183,8 @@ class VirtualMachine:
                 operation = token.operation(*args)
                 execute_action = operation.operate(token.address, self.callback)
                 execute_action()
-                print(self.memory.position)
+                if vm_super_logs:
+                    print(self.memory.position)
                 if self.memory.position == -1:
                     break
             except Exception as ex:
