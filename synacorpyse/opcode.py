@@ -513,7 +513,6 @@ class NoOp(Operation):
             args=[]
         )
         return callback(message)
-        # pass
 
 
 opcode_map = {

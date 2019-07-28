@@ -1,7 +1,7 @@
-from memory import Memory
-from synacorpyse import Register
-from stack import Stack
-from virtual_machine import VirtualMachine
+from synacorpyse.memory import Memory
+from synacorpyse.register import Register
+from synacorpyse.stack import Stack
+from synacorpyse.virtual_machine import VirtualMachine
 
 
 def test_init_registers():

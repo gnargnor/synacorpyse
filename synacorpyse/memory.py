@@ -1,5 +1,6 @@
 memory_super_logs = False
 
+
 class Memory:
     @property
     def tokens(self):  # Are tokens the same as the memory?
@@ -11,7 +12,7 @@ class Memory:
     def position(self):
         return self.__position
 
-    def __init__(self, tokens, position=0):
+    def load(self, tokens, position=0):
         self.__tokens = tokens
         self.__position = position
 

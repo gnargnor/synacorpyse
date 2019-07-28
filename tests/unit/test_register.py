@@ -1,6 +1,6 @@
 import pytest
 
-from register import Register
+from synacorpyse.register import Register
 
 
 def test_register_address():

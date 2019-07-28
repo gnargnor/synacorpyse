@@ -1,6 +1,6 @@
 import pytest
 
-from stack import Stack, EmptyStackError
+from synacorpyse.stack import Stack, EmptyStackError
 
 
 def test_push_stack():

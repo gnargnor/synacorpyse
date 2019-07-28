@@ -68,7 +68,7 @@ class VirtualMachine:
     def __init__(self, num_regs: int):
         self.__registers = self.init_registers(num_regs)
         self.__stack = self.init_stack()
-        self.__memory = None
+        self.__memory = Memory()
         self.__output = ''
 
     @staticmethod
@@ -167,7 +167,7 @@ class VirtualMachine:
         input_values = self.interpret_binary(source_file)
         tokenizer = Tokens(input_values)
         tokens = [token for token in tokenizer]
-        self.__init_memory(tokens)
+        self.memory.load(tokens)
 
     def run(self):
         while True:
