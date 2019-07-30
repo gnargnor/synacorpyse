@@ -3,8 +3,8 @@
 # https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 
 .DS_Store
-misc.xml
-syanacor-challenge.iml
+.idea/misc.xml
+.idea/synacor-challenge.iml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
