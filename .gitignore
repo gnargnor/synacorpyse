@@ -5,6 +5,7 @@
 .DS_Store
 .idea/misc.xml
 .idea/synacor-challenge.iml
+RESOURCES.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
