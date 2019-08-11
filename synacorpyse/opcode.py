@@ -4,8 +4,14 @@ from synacorpyse.constants import Action
 from synacorpyse.message import Message
 from synacorpyse.register import Register
 
+condition = lambda current_address : 317 < current_address < 1093
+conditional_logs = True
+justin_logs = False
+justwrite_logs = False
+justjump_logs = True
+justout_logs = True
 op_code_logs = False
-print_letters_written_to_memory = True
+print_letters_written_to_memory = False
 
 
 class Operation(metaclass=ABCMeta):
@@ -42,6 +48,13 @@ class Halt(Operation):
             action=Action.halt,
             args=[]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -63,6 +76,13 @@ class Set(Operation):
             action=Action.update_register,
             args=[self.address, self.token.value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -82,6 +102,13 @@ class Push(Operation):
             action=Action.push_stack,
             args=[self.token_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -101,6 +128,13 @@ class Pop(Operation):
             action=Action.pop_stack,
             args=[self.address]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -125,6 +159,13 @@ class Equal(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -149,6 +190,13 @@ class GreaterThan(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -169,6 +217,13 @@ class Jump(Operation):
             action=Action.jump,
             args=[self.destination]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -180,7 +235,7 @@ class JumpTrue(Operation):
     def __init__(self, a, b):
         self.condition = a
         self.destination = b
-        if op_code_logs:
+        if op_code_logs or justjump_logs:
             print('#jump true op')
             print(f'==> condition: {self.condition}')
             print(f'==> destination: {self.destination}')
@@ -196,6 +251,13 @@ class JumpTrue(Operation):
                 action=Action.no_op,
                 args=[]
             )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -207,7 +269,7 @@ class JumpFalse(Operation):
     def __init__(self, a, b):
         self.condition = a
         self.destination = b
-        if op_code_logs:
+        if op_code_logs or justjump_logs:
             print(f'#jump false op')
             print(f'==> condition: {self.condition}')
             print(f'==> destination: {self.destination}')
@@ -223,6 +285,13 @@ class JumpFalse(Operation):
                 action=Action.no_op,
                 args=[]
             )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -247,6 +316,13 @@ class Add(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -271,6 +347,13 @@ class Multiply(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -295,6 +378,13 @@ class Modulo(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -319,6 +409,13 @@ class And(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -343,6 +440,13 @@ class Or(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -368,6 +472,13 @@ class Not(Operation):
             action=Action.update_register,
             args=[self.address, new_value]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -389,6 +500,13 @@ class ReadMemory(Operation):
             action=Action.read_memory,
             args=[self.target_address, self.memory_address]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -402,7 +520,7 @@ class WriteMemory(Operation):
             print(chr(b.value), end='')
         self.target_address = a.value
         self.source_token = b.value
-        if op_code_logs:
+        if op_code_logs or justwrite_logs:
             print('#write memory op')
             print(f'==> target_address: {a.value}')
             print(f'==> source token: {b.value}')
@@ -414,6 +532,13 @@ class WriteMemory(Operation):
             action=Action.write_memory,
             args=[self.target_address, self.source_token]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
         # memory[memory_address].value = self.storage_location.value
 
@@ -434,6 +559,13 @@ class Call(Operation):
             action=Action.call,
             args=[current_address, self.destination]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -451,6 +583,13 @@ class Return(Operation):
             action=Action.ret,
             args=[]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -461,15 +600,23 @@ class Out(Operation):
 
     def __init__(self, a):
         self.ascii_code = a
-        if op_code_logs:
+        if op_code_logs or justout_logs:
             print('#out op')
-            print(f'==> ascii code: {a}')
+            print(f'==> ascii code: {chr(a.value)}')
 
     def operate(self, current_address, callback):
+        print(f'current address: {current_address}')
         message = Message(
             action=Action.update_display,
             args=[self.ascii_code]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -484,7 +631,7 @@ class In(Operation):
 
     def __init__(self, a):
         self.write_location = a
-        if op_code_logs:
+        if op_code_logs or justin_logs:
             print(f'#in op')
             print(f'==> write location: {a}')
 
@@ -495,6 +642,13 @@ class In(Operation):
             action=Action.update_register,
             args=[self.write_location]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
@@ -512,6 +666,13 @@ class NoOp(Operation):
             action=Action.no_op,
             args=[]
         )
+        if conditional_logs and condition(current_address):
+            print('**')
+            print(f'current address: {current_address}')
+            print(message.action)
+            print(message.args)
+            print('**')
+            print()
         return callback(message)
 
 
