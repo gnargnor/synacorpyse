@@ -5,7 +5,7 @@ install_requires = [
 ]
 
 tests_require = [
-    'pytest==5.0.1'
+    'pytest==9.0.3'
 ]
 
 setup(
